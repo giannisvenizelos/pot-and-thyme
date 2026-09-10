@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import {
   ArrowLeft,
   ArrowRight,
@@ -51,12 +52,12 @@ type Recipe = {
   title: string;
   prep: number;
   cook: number;
-  image?: boolean;
+  image?: string;
   tone: string;
 };
 
 const recipes: Recipe[] = [
-  { id: 1, meal: "Μεσημεριανά", subcategory: "Κοτόπουλο", title: "Κοτόπουλο κοκκινιστό με ρύζι", prep: 12, cook: 35, image: true, tone: "olive" },
+  { id: 1, meal: "Μεσημεριανά", subcategory: "Κοτόπουλο", title: "Κοτόπουλο κοκκινιστό με ρύζι", prep: 12, cook: 35, image: "/assets/recipe-photo-trial.png", tone: "olive" },
   { id: 2, meal: "Μεσημεριανά", subcategory: "Κοτόπουλο", title: "Κοτόπουλο λεμονάτο με ρύζι", prep: 10, cook: 30, tone: "lemon" },
   { id: 3, meal: "Μεσημεριανά", subcategory: "Κοτόπουλο", title: "Κοτόπουλο με πατάτες φούρνου", prep: 15, cook: 45, tone: "terracotta" },
   { id: 4, meal: "Μεσημεριανά", subcategory: "Μοσχάρι & Κιμάς", title: "Μπιφτέκια με πατάτες φούρνου", prep: 15, cook: 40, tone: "clay" },
@@ -131,7 +132,7 @@ function WorkspaceBar({ notice }: { notice: string }) {
 
 function FoodVisual({ recipe }: { recipe: Recipe }) {
   const Icon = recipe.subcategory === "Ψάρια" ? Fish : recipe.subcategory.includes("Όσπρια") ? Leaf : UtensilsCrossed;
-  return recipe.image ? <img className="food-visual" src="/assets/lemon-chicken.svg" alt={recipe.title} /> : <div className={cn("food-visual food-placeholder", `tone-${recipe.tone}`)}><Icon /></div>;
+  return recipe.image ? <Image className="food-visual" src={recipe.image} alt={recipe.title} width={1368} height={1149} sizes="(max-width: 640px) 100vw, 50vw" /> : <div className={cn("food-visual food-placeholder", `tone-${recipe.tone}`)}><Icon /></div>;
 }
 
 function RecipeCard({ recipe, onOpen, onAdd }: { recipe: Recipe; onOpen: () => void; onAdd: () => void }) {
@@ -155,7 +156,7 @@ type PlanItem = { key: number; recipe: Recipe; qty: number };
 
 function PlanList({ plan, setPlan, full = false }: { plan: PlanItem[]; setPlan: React.Dispatch<React.SetStateAction<PlanItem[]>>; full?: boolean }) {
   const update = (key: number, delta: number) => setPlan((current) => current.map((item) => item.key === key ? { ...item, qty: Math.max(.5, item.qty + delta) } : item));
-  return <div className={cn("plan-list", full && "plan-list-full")}>{plan.length ? plan.map((item) => <article className="plan-item" key={item.key}><div className={cn("plan-thumb", `tone-${item.recipe.tone}`)}>{item.recipe.image ? <img src="/assets/lemon-chicken.svg" alt="" /> : <ChefHat />}</div><div className="plan-copy"><strong>{item.recipe.title}</strong><span>{item.recipe.meal.replace("ά", "ό").replace("ά", "ό")}</span></div><div className="qty-control"><button onClick={() => update(item.key, -.5)}><Minus /></button><strong>{item.qty}</strong><button onClick={() => update(item.key, .5)}><Plus /></button></div><button className="remove-item" onClick={() => setPlan((current) => current.filter((entry) => entry.key !== item.key))}><X /></button></article>) : <div className="empty-small"><ClipboardCheck /><span>Δεν έχεις γεύματα ακόμη.</span></div>}</div>;
+  return <div className={cn("plan-list", full && "plan-list-full")}>{plan.length ? plan.map((item) => <article className="plan-item" key={item.key}><div className={cn("plan-thumb", `tone-${item.recipe.tone}`)}>{item.recipe.image ? <Image src={item.recipe.image} alt="" width={48} height={48} sizes="48px" /> : <ChefHat />}</div><div className="plan-copy"><strong>{item.recipe.title}</strong><span>{item.recipe.meal.replace("ά", "ό").replace("ά", "ό")}</span></div><div className="qty-control"><button onClick={() => update(item.key, -.5)}><Minus /></button><strong>{item.qty}</strong><button onClick={() => update(item.key, .5)}><Plus /></button></div><button className="remove-item" onClick={() => setPlan((current) => current.filter((entry) => entry.key !== item.key))}><X /></button></article>) : <div className="empty-small"><ClipboardCheck /><span>Δεν έχεις γεύματα ακόμη.</span></div>}</div>;
 }
 
 function ShoppingList({ checked, setChecked, full = false }: { checked: string[]; setChecked: React.Dispatch<React.SetStateAction<string[]>>; full?: boolean }) {
